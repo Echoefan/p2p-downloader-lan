@@ -1,3 +1,4 @@
+package p2pcs;
 
 
 import java.io.BufferedReader;
@@ -10,7 +11,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import Filelist.Chunks;
+import fileList.Chunks;
 
 public class Server extends Thread{ 
 	static final String Send_Filepah="/home/rushzhou/Documents/";

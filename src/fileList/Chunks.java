@@ -1,4 +1,4 @@
-package Filelist;
+package fileList;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
