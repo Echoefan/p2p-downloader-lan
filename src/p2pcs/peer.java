@@ -14,8 +14,8 @@ import fileList.fileList;
 public class peer {
 
     public static   List <fileList> gotted_lists;
-	public static  List <fileList> getmeesage(String inputOrder) throws Exception {
-		Socket s=new Socket("192.168.1.105",30002);
+	public static  List <fileList> getmeesage(String inputOrder,String hostip) throws Exception {
+		Socket s=new Socket(hostip,30002);
 		//new Thread(new ClientThread(s)).start();\
 		PrintStream ps=new PrintStream(s.getOutputStream());
 		//String line=null;
@@ -27,7 +27,7 @@ public class peer {
 				ia=InetAddress.getLocalHost();
 				String ln=ia.getHostName();
 				String send;
-				send=inputOrder+" "+ln;
+				send=inputOrder+ln;
 				System.out.println(send);
 				ps.println(send);
 				BufferedInputStream bi=new BufferedInputStream(s.getInputStream());
@@ -50,6 +50,28 @@ public class peer {
 		}
 		return null;
 	
+	}
+	public static  void upfilefun(String inputOrder,String hostip) throws Exception {
+		Socket s=new Socket(hostip,30002);
+		//new Thread(new ClientThread(s)).start();\
+		PrintStream ps=new PrintStream(s.getOutputStream());
+		//String line=null;
+		//BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
+		while(inputOrder!=null)
+		{
+			try {
+				InetAddress ia=null;
+				ia=InetAddress.getLocalHost();
+				String ln=ia.getHostName();
+				String send;
+				send="u"+" "+inputOrder+" "+ln;
+				System.out.println(send);
+				ps.println(send);
+				break;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

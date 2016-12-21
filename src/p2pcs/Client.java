@@ -21,18 +21,20 @@ import fileList.fileList;
 
 	public class Client extends Thread {
 		//static final String Receie_Filepah="E:/temp1/";
-		static final String Receie_Filepah="/home/rushzhou/Documents/split_rev/";
+		//static  String Receie_Filepah="/home/rushzhou/Documents/split_rev/";
 		Socket so; // 套接字
 		fileList searchfilelist;
 		static int chunks_sum; // 分片总数
 		int i;
 		String filename;
+		String filepath;
 		
-		public Client(fileList searchfilelist, int i, String filename) {
+		public Client(fileList searchfilelist, int i, String filename,String filepath) {
 			this.searchfilelist = searchfilelist;
 			this.i = i;
 			this.filename = filename;
 			this.so = null;
+			this.filepath = filepath;
 		}
 		
 		@Override
@@ -94,14 +96,14 @@ import fileList.fileList;
 				dis = new DataInputStream(so.getInputStream());
 				for (int i=chunks_start; i<chunks_end; i++){
 					try {
-						File f = new File(Receie_Filepah);
+						File f = new File(filepath);
 						if(!f.exists()){
 							f.mkdir();  
 						}
 						/*  
 						 * 文件存储位置  
 						 */
-						String filePath = Receie_Filepah+filename+"-"+i;
+						String filePath = filepath+filename+"-"+i;
 						fos = new FileOutputStream(new File(filePath));    
 						inputByte = new byte[1024];   
 						System.out.println("开始接收数据...");  
@@ -129,51 +131,50 @@ import fileList.fileList;
 			}
 		}
 
-		public static void main(String[] args)throws Exception{ 
+		public static void clientdown(String filepath,String filename,String hostip)throws Exception{ 
 			
 			
-			 String file_name="test.mp4";
-			 
-			try {
-				System.out.println("fuck");
-				List<fileList> filelist=peer.getmeesage("f");
-				if(filelist==null)
-				{
-					System.out.println("fuck dd");
+			 //String file_name="test.mp4";
+				filepath = filepath.replaceAll("\\\\", "/");
+				System.out.println(filepath);
+				try {
+					//System.out.println("fuck");
+					List<fileList> filelist=peer.getmeesage("f",hostip);
+					//System.out.println("fuck1");
+					System.out.println(filelist.get(0).peers.get(0).peerIP);
+				  
+				  //************test_data*******************************************
+				  fileList searchfilelist=null;//存储查询到的filelist
+				  int sumhosts=0;
+			      //String filename=filename1;//在界面选择得到一个需要下载的文件名
+				  for(int j = 0; j < filelist.size(); j++)  
+			      {  
+					  if(filelist.get(j).fileName.equals(filename))
+						{
+						    searchfilelist=filelist.get(j);
+							break;
+						}
+			      } 
+				  //===========================获取到数据并准备好数据准备传输===========================
+				 sumhosts=searchfilelist.peers.size();
+				 ArrayList<Client> threads = new ArrayList<Client>();
+				 for(int i=0;i<sumhosts;i++)
+				 {
+						 threads.add(new Client(searchfilelist, i, filename,filepath));
+						 threads.get(i).start();
+				 } 
+				 // 路障 
+				 for(int i=0;i<sumhosts;i++){
+					 threads.get(i).join();
+				 }
+					 
+				 // 合并文件
+				 Chunks.merge(filepath+filename, filepath, Client.chunks_sum);
+				 peer.upfilefun(filename,hostip);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				System.out.println("fuck1");
-				System.out.println(filelist.get(0).peers.get(0).peerIP);
-			  
-			  //************test_data*******************************************
-			  fileList searchfilelist=null;//存储查询到的filelist
-			  int sumhosts=0;
-		      String filename="test.mp4";//在界面选择得到一个需要下载的文件名
-			  for(int j = 0; j < filelist.size(); j++)  
-		      {  
-				  if(filelist.get(j).fileName.equals(filename))
-					{
-					    searchfilelist=filelist.get(j);
-						break;
-					}
-		      } 
-			  //===========================获取到数据并准备好数据准备传输===========================
-			 sumhosts=searchfilelist.peers.size();
-			 ArrayList<Client> threads = new ArrayList<Client>();
-			 for(int i=0;i<sumhosts;i++)
-			 {
-					 threads.add(new Client(searchfilelist, i, filename));
-					 threads.get(i).start();
-			 } 
-			 // 路障 
-			 for(int i=0;i<sumhosts;i++){
-				 threads.get(i).join();
-			 }
-				 
-			 // 合并文件
-			 Chunks.merge(Receie_Filepah+file_name, Receie_Filepah, Client.chunks_sum);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-		}
+		
 	}

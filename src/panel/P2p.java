@@ -21,8 +21,11 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import fileList.fileList;
+import p2pcs.Client;
 import p2pcs.Server;
 import p2pcs.peer; 
 
@@ -31,9 +34,6 @@ public class P2p {
     
     public static void main(String[] args) {    
     	
-    	//判定是否启动tracker
-    	//开启server
-    	new Thread(new ServerThread()).start();
     	
     	//主页面
         final JFrame mainframe = new JFrame("P2P 	PROJECT");
@@ -62,15 +62,23 @@ public class P2p {
         panel.add(hostLabel);
         
         //主机列表
-        Vector<String> hostvector = new Vector<String>();
+        final Vector<String> hostvector = new Vector<String>();
        // hostvector.add("user1");
        // hostvector.add("user2");
         //hostvector.add("user3");
-        JList hostlist = new JList(hostvector);
+        final JList hostlist = new JList(hostvector);
         hostlist.setBounds(xint,yint+50, 220, 250);
         hostlist.setBorder(lineBorder);
         panel.add(hostlist);
         
+        //host IP列表标注
+        JLabel hostipjl = new JLabel("tracker IP地址(请输入)：");
+        hostipjl.setBounds(xint+240,yint,150,25);
+        panel.add(hostipjl);
+        //hostIP输入框
+        final JTextField hostipjtf = new JTextField();
+        hostipjtf.setBounds(xint+400,yint,200,25);
+        panel.add(hostipjtf);
         
         
         //下载文件路径
@@ -81,7 +89,7 @@ public class P2p {
         
         //浏览文件按钮
         JButton filedownButton = new JButton("选择路径");
-        filedownButton.setBounds(xint+10,yint+390, 100, 25);
+        filedownButton.setBounds(xint+10,yint+390,200, 25);
         filedownButton.addActionListener(new ActionListener() {
         	   @Override
         	   public void actionPerformed(ActionEvent e) {
@@ -100,21 +108,6 @@ public class P2p {
         	  });
         panel.add(filedownButton);
         
-      //确认下载文件路径按钮
-        JButton downButton = new JButton("确认下载");
-        downButton.setBounds(xint+110,yint+390, 100, 25);
-        downButton.addActionListener(new ActionListener() {
-     	   @Override
-     	   public void actionPerformed(ActionEvent e) {
-     		   ////按钮点击事件
-     	    JFrame frame = new JFrame("È·ÈÏÏÂÔØÂ·Ÿ¶");
-     	    frame.setLayout(null);
-     	    frame.setBounds(20, 20, 300, 100);
-     	    frame.setVisible(true);
-     	   }
-     	  });
-        panel.add(downButton);
-        
         //上传文件路径
         final JTextField curfiletf = new JTextField();
         curfiletf.setBounds(xint+10, yint+450, 200, 25);
@@ -128,7 +121,8 @@ public class P2p {
         	   @Override
         	   public void actionPerformed(ActionEvent e) {
         		 ////按钮点击事件
-        		   JFileChooser jfc = new JFileChooser();
+        		   String filepath2 = downfiletf.getText().toString().replaceAll("\\\\", "/");
+        		   JFileChooser jfc = new JFileChooser(filepath2);
         		     if(jfc.showOpenDialog(mainframe)==JFileChooser.APPROVE_OPTION ){
         		    	 curfiletf.setText(jfc.getSelectedFile().getAbsolutePath());
         		     }
@@ -143,10 +137,17 @@ public class P2p {
      	   @Override
      	   public void actionPerformed(ActionEvent e) {
      		   ////按钮点击事件
-     	    JFrame frame = new JFrame("È·ÈÏÉÏŽ«");
-     	    frame.setLayout(null);
-     	    frame.setBounds(20, 20, 300, 100);
-     	    frame.setVisible(true);
+     		   String hostip = hostipjtf.getText().toString();
+     		   String upfile = curfiletf.getText().toString();
+     		   String [] spfile = upfile.split("\\\\");
+     		   upfile = spfile[spfile.length-1];
+     		   try {
+				peer.upfilefun(upfile,hostip);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+     		   
      	   }
      	  });
         panel.add(filelistButton);
@@ -157,28 +158,68 @@ public class P2p {
         panel.add(localfileLabel);
         
         //本地文件列表
-        Vector<String> localfilevector = new Vector<String>();
+        final Vector<String> localfilevector = new Vector<String>();
         //localfilevector.add("a.txt");
         //localfilevector.add("b.jpg");
-        JList localfilelist = new JList(localfilevector);
+        final JList localfilelist = new JList(localfilevector);
         localfilelist.setBounds(xint+240,yint+50, 190, 300);
         localfilelist.setBorder(lineBorder);
         panel.add(localfilelist);
 
+        //选中文件主机列表
+        final Vector<String> hostchosedvector = new Vector<String>();
+        //hostchosedvector.add("user1");
+        final JList hostchosedlist = new JList(hostchosedvector);
+        hostchosedlist.setBounds(xint+240,yint+380, 390, 100);
+        hostchosedlist.setBorder(lineBorder);
+        panel.add(hostchosedlist);
+        
         //局域网内文件列表标注
         JLabel netfileLabel = new JLabel("局域网内共享文件列表");
         netfileLabel.setBounds(xint+440,yint+20,200,25);
         panel.add(netfileLabel);
         
         //局域网内共享文件列表
-        Vector<String> netfilevector = new Vector<String>();
+        final Vector<String> netfilevector = new Vector<String>();
         //netfilevector.add("a.txt");
         //netfilevector.add("b.jpg");
         //netfilevector.add("c.mp3");
         //netfilevector.add("d.wav");
-        JList netfilelist = new JList(netfilevector);
+        final JList netfilelist = new JList(netfilevector);
         netfilelist.setBounds(xint+440,yint+50, 190, 300);
         netfilelist.setBorder(lineBorder);
+        netfilelist.addListSelectionListener(new ListSelectionListener()
+		{
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				// TODO Auto-generated method stub
+				List<fileList> filelist;
+				String hostip = hostipjtf.getText().toString();
+				
+				try {
+					hostchosedvector.clear();
+					filelist = peer.getmeesage("f",hostip);
+					String filechosedstr = (String) netfilelist.getSelectedValue();
+					for(int i=0;i<filelist.size();i++)
+					{
+						if(filelist.get(i).fileName.equals(filechosedstr))
+						{
+							for(int j=0;j<filelist.get(i).peers.size();j++)
+							{
+								hostchosedvector.add(filelist.get(i).peers.get(j).hostname);
+							}
+							break;
+						}
+					}
+					hostchosedlist.setListData(hostchosedvector);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+	
+		});
         panel.add(netfilelist);
         
         //选中主机标注
@@ -186,14 +227,8 @@ public class P2p {
         hostchosedLabel.setBounds(xint+240,yint+350,200,25);
         panel.add(hostchosedLabel);
         
-        //选中文件主机列表
-        Vector<String> hostchosedvector = new Vector<String>();
-        //hostchosedvector.add("user1");
-        JList hostchosedlist = new JList(hostchosedvector);
-        hostchosedlist.setBounds(xint+240,yint+380, 390, 100);
-        hostchosedlist.setBorder(lineBorder);
-        panel.add(hostchosedlist);
-
+        
+        
         //下载按钮
         JButton downloadButton = new JButton("P2P并行下载");
         downloadButton.setBounds(xint+440,yint+352,190,25);
@@ -201,10 +236,18 @@ public class P2p {
       	   @Override
       	   public void actionPerformed(ActionEvent e) {
       		   ////按钮点击事件
-      	    JFrame frame = new JFrame("P2P²¢ÐÐÏÂÔØ");
-      	    frame.setLayout(null);
-      	    frame.setBounds(20, 20, 300, 100);
-      	    frame.setVisible(true);
+      		   try {
+      			 String hostip = hostipjtf.getText().toString();
+      			   String filename = netfilelist.getSelectedValue().toString();
+      			   String filepath = downfiletf.getText().toString();
+					if(filepath!=null&&filename!=null)
+					{
+						Client.clientdown(filepath, filename,hostip);
+					}
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
       	   }
       	  });
         panel.add(downloadButton);
@@ -216,7 +259,7 @@ public class P2p {
         
         //下载进度条
         JProgressBar progress = new JProgressBar();
-        progress.setBounds(xint+300,yint+490,200,20);
+        progress.setBounds(xint+300,yint+490,326,20);
         progress.setMinimum(0);  
         progress.setMaximum(100);  
         progress.setValue(80);   
@@ -224,36 +267,51 @@ public class P2p {
         mainframe.setVisible(true);
       //刷新列表按钮
         JButton updateLabel = new JButton("刷新列表");
-        updateLabel.setBounds(xint+110,yint+310, 100, 25);
+        updateLabel.setBounds(xint+10,yint+310, 200, 25);
         updateLabel.addActionListener(new ActionListener() {
      	   @Override
      	   public void actionPerformed(ActionEvent e) {
      		 //按钮点击时事件
      		  try {
-				List<fileList> filelist=peer.getmeesage("f");
-				for(int i=0;i<filelist.size();i++)
+     			hostvector.clear();
+     			netfilevector.clear();
+     			localfilevector.clear();
+ 				hostlist.setListData(hostvector);
+ 				netfilelist.setListData(netfilevector);
+ 				String hostip = hostipjtf.getText().toString();
+				List<fileList> filelist=peer.getmeesage("f",hostip);
+				if(filelist!=null)
 				{
-					netfilevector.add(filelist.get(i).fileName);
-					for(int j=0;j<filelist.get(i).peers.size();j++)
+					InetAddress ia=null;
+					ia=InetAddress.getLocalHost();
+					String ln=ia.getHostName();
+					for(int i=0;i<filelist.size();i++)
 					{
-						//System.out.println(filelist.get(i).peers.get(j).hostname);
-						int count=0;
-						for(int c=0;c<hostvector.size();c++)
+						netfilevector.add(filelist.get(i).fileName);
+						for(int j=0;j<filelist.get(i).peers.size();j++)
 						{
-							if(filelist.get(i).peers.get(j).hostname.equals(hostvector.get(c)))
-								break;
-							count++;
+							//System.out.println(filelist.get(i).peers.get(j).hostname);
+							int count=0;
+							for(int c=0;c<hostvector.size();c++)
+							{
+								if(filelist.get(i).peers.get(j).hostname.equals(hostvector.get(c)))
+									break;
+								count++;
+							}
+							if(count==hostvector.size())
+							{
+							    hostvector.add(filelist.get(i).peers.get(j).hostname);
+							}
+							if(filelist.get(i).peers.get(j).hostname.equals(ln))
+							{
+								localfilevector.add(filelist.get(i).fileName);
+							}
 						}
-						if(count==hostvector.size())
-						{
-						    hostvector.add(filelist.get(i).peers.get(j).hostname);
-						}
-						hostlist.setListData(hostvector);
-						netfilelist.setListData(netfilevector);
 					}
+					localfilelist.setListData(localfilevector);
+					hostlist.setListData(hostvector);
+					netfilelist.setListData(netfilevector);
 				}
-				
-			
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -261,18 +319,21 @@ public class P2p {
      	   }
      	  });
         panel.add(updateLabel);
+      //开启server
+    	new Thread(new ServerThread(downfiletf.getText().toString())).start();
     }
     static class ServerThread implements Runnable{ 
-    	//public  String Send_Filepah="/home/rushzhou/Documents/";
+    	public  String Send_Filepah;//="/home/rushzhou/Documents/";
     	//private Socket server; 
-    	//public ServerThread(String Send_Filepah){ 
-    		//this.Send_Filepah=Send_Filepah; 
-    	//} 
+    	public ServerThread(String Send_Filepah){ 
+    		this.Send_Filepah=Send_Filepah; 
+    	} 
+    	
     	public void run(){ 
     		try {
     			ServerSocket server=new ServerSocket(30001); 
     			while(true){ 
-    				Server s=new Server(server.accept()); 
+    				Server s=new Server(server.accept(),Send_Filepah); 
     				System.out.println("开始发送文件线程");
     				s.start(); 		
     			}

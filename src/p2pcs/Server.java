@@ -14,11 +14,13 @@ import java.net.Socket;
 import fileList.Chunks;
 
 public class Server extends Thread{ 
-	static final String Send_Filepah="/home/rushzhou/Documents/";
+	//static final String Send_Filepah="C:/myshare/";
 
 	private Socket server; 
-	public Server(Socket server){ 
+	public String Send_Filepah;
+	public Server(Socket server,String Send_Filepah){ 
 		this.server=server; 
+		this.Send_Filepah = Send_Filepah;
 	} 
 
 	public void run(){ 
@@ -31,7 +33,7 @@ public class Server extends Thread{
 //===========================================收到了数据===分片把每一片传回去========================			
 		    String[] sourceStrArray = str.split(",");
 		   
-		    int sumsplit=Chunks.split(Send_Filepah+sourceStrArray[0], Send_Filepah+"split/");
+		    int sumsplit=Chunks.split(Send_Filepah+sourceStrArray[0], Send_Filepah);
 		    int your_hostnum=Integer.parseInt(sourceStrArray[1]);
 		    int sumhost=Integer.parseInt(sourceStrArray[2]);
 		    int limit=sumsplit/sumhost;//算出上限
@@ -105,14 +107,4 @@ public class Server extends Thread{
 		}
 		System.out.println(bool?"成功":"失败");
 	}
-	
-	public static void main(String[] args)throws IOException{ 
-	    //假设文件的发送端口为30001
-		ServerSocket server=new ServerSocket(30001); 
-		while(true){ 
-			Server s=new Server(server.accept()); 
-			System.out.println("开始发送文件线程");
-			s.start(); 		
-	   } 
-	} 
 }
