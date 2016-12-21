@@ -45,7 +45,15 @@ class ServerThread implements Runnable
 						{
 							String ip[]=s.getInetAddress().toString().split("/");
 						    System.out.println(ip[1]);
-							tracker.fl.get(i).peers.add(new peerp(t[2],ip[1]));
+						    int countp=0;
+						    for(int p=0;p<tracker.fl.get(i).peers.size();p++)
+						    {
+						    	if(tracker.fl.get(i).peers.get(p).peerIP.compareTo(ip[1])==0)
+						    		break;
+						    	countp++;
+						    }
+						    if(countp==tracker.fl.get(i).peers.size())
+							    tracker.fl.get(i).peers.add(new peerp(t[2],ip[1]));
 						}
 						else
 							count++;
