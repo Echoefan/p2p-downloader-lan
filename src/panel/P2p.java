@@ -102,7 +102,11 @@ public class P2p {
         		    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         		    chooser.setAcceptAllFileFilterUsed(false);
         		    if (chooser.showOpenDialog(panel) == JFileChooser.APPROVE_OPTION) {
-        		    	downfiletf.setText(chooser.getSelectedFile()+"");
+        		    	downfiletf.setText(chooser.getSelectedFile()+"\\");
+        		    	String filepath = downfiletf.getText();
+        		    	//开启server
+        		    	new Thread(new ServerThread(filepath)).start();
+        		    	filedownButton.setEnabled(false);
         		    } 
         	   }
         	  });
@@ -121,7 +125,7 @@ public class P2p {
         	   @Override
         	   public void actionPerformed(ActionEvent e) {
         		 ////按钮点击事件
-        		   String filepath2 = downfiletf.getText().toString().replaceAll("\\\\", "/");
+        		   String filepath2 = downfiletf.getText();
         		   JFileChooser jfc = new JFileChooser(filepath2);
         		     if(jfc.showOpenDialog(mainframe)==JFileChooser.APPROVE_OPTION ){
         		    	 curfiletf.setText(jfc.getSelectedFile().getAbsolutePath());
@@ -139,7 +143,7 @@ public class P2p {
      		   ////按钮点击事件
      		   String hostip = hostipjtf.getText().toString();
      		   String upfile = curfiletf.getText().toString();
-     		   String [] spfile = upfile.split("\\\\");
+     		   String [] spfile = upfile.split("\\");
      		   upfile = spfile[spfile.length-1];
      		   try {
 				peer.upfilefun(upfile,hostip);
@@ -319,11 +323,9 @@ public class P2p {
      	   }
      	  });
         panel.add(updateLabel);
-      //开启server
-    	new Thread(new ServerThread(downfiletf.getText().toString())).start();
     }
     static class ServerThread implements Runnable{ 
-    	public  String Send_Filepah;//="/home/rushzhou/Documents/";
+    	public  String Send_Filepah;
     	//private Socket server; 
     	public ServerThread(String Send_Filepah){ 
     		this.Send_Filepah=Send_Filepah; 

@@ -14,7 +14,6 @@ import java.net.Socket;
 import fileList.Chunks;
 
 public class Server extends Thread{ 
-	//static final String Send_Filepah="C:/myshare/";
 
 	private Socket server; 
 	public String Send_Filepah;
@@ -48,7 +47,7 @@ public class Server extends Thread{
 		    	for(int i=(your_hostnum-1)*limit;i<sumsplit;i++)
 		    	{
 		    		System.out.println("[1]: " + i);
-		    		sendFile(Send_Filepah+"split/"+sourceStrArray[0]+"-"+i, server.getInetAddress());
+		    		sendFile(Send_Filepah+sourceStrArray[0]+"-"+i, server.getInetAddress());
 		    	}
 		    }
 		    else
@@ -60,14 +59,14 @@ public class Server extends Thread{
 		    	for(int i=(your_hostnum-1)*limit;i<your_hostnum*limit;i++)
 		    	{
 		    		System.out.println("[2]: " + i);
-		    		sendFile(Send_Filepah+"split/"+sourceStrArray[0]+"-"+i, server.getInetAddress());
+		    		sendFile(Send_Filepah+sourceStrArray[0]+"-"+i, server.getInetAddress());
 		    	}
 		    }
 		    server.close(); 
 		    
 		    // 删除临时分片文件
 		    for(int i=0; i<sumsplit; i++){
-		    	File del = new File(Send_Filepah+"split/"+sourceStrArray[0]+"-"+i);
+		    	File del = new File(Send_Filepah+sourceStrArray[0]+"-"+i);
 		    	del.delete();
 		    }
 		}

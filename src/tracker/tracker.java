@@ -43,7 +43,7 @@ class ServerThread implements Runnable
 						
 						if(tracker.fl.get(i).fileName.compareTo(t[1])==0)
 						{
-							String ip[]=s.getInetAddress().toString().split("/");
+							String ip[]=s.getInetAddress().toString().split("\\");
 						    System.out.println(ip[1]);
 						    int countp=0;
 						    for(int p=0;p<tracker.fl.get(i).peers.size();p++)
@@ -60,7 +60,7 @@ class ServerThread implements Runnable
 					}
 					if(count==tracker.fl.size())
 					{
-						String ip[]=s.getInetAddress().toString().split("/");
+						String ip[]=s.getInetAddress().toString().split("\\");
 						System.out.println(ip[1]);
 						peerp pp=new peerp(t[2],ip[1]);
 						fileList f=new fileList(t[1],pp);

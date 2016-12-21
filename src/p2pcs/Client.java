@@ -20,8 +20,7 @@ import fileList.fileList;
 	
 
 	public class Client extends Thread {
-		//static final String Receie_Filepah="E:/temp1/";
-		//static  String Receie_Filepah="/home/rushzhou/Documents/split_rev/";
+
 		Socket so; // 套接字
 		fileList searchfilelist;
 		static int chunks_sum; // 分片总数
@@ -133,14 +132,9 @@ import fileList.fileList;
 
 		public static void clientdown(String filepath,String filename,String hostip)throws Exception{ 
 			
-			
-			 //String file_name="test.mp4";
-				filepath = filepath.replaceAll("\\\\", "/");
 				System.out.println(filepath);
 				try {
-					//System.out.println("fuck");
 					List<fileList> filelist=peer.getmeesage("f",hostip);
-					//System.out.println("fuck1");
 					System.out.println(filelist.get(0).peers.get(0).peerIP);
 				  
 				  //************test_data*******************************************

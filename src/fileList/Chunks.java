@@ -26,7 +26,7 @@ public class Chunks {
         int number = (int)(srcSize/destSize);  
         number = srcSize%destSize==0?number:number+1;//分割后文件的数目  
           
-        String fileName = src.substring(src.lastIndexOf("/"));//源文件名  
+        String fileName = src.substring(src.lastIndexOf("\\"));//源文件名  
         InputStream in = null;//输入字节流  
         BufferedInputStream bis = null;//输入缓冲流  
         byte[] bytes = new byte[1024*1024];//每次读取文件的大小为1MB  
@@ -36,7 +36,7 @@ public class Chunks {
             bis = new BufferedInputStream(in);  
             for(int i=0;i<number;i++){  
                   
-                String destName = dest+File.separator+fileName+"-"+i;  
+                String destName = dest+fileName+"-"+i;  
                 OutputStream out = new FileOutputStream(destName);  
                 BufferedOutputStream bos = new BufferedOutputStream(out);  
                 int count = 0;  
@@ -77,7 +77,7 @@ public class Chunks {
     public static void merge(String src, String dest, int chunks){ 
     	System.out.println("开始合并...");
         //合并后的文件名  
-        String name = src.substring(src.lastIndexOf("/"));  
+        String name = src.substring(src.lastIndexOf("\\"));  
         dest = dest+name;//合并后的文件路径  
           
         File destFile = new File(dest);//合并后的文件  
