@@ -37,7 +37,8 @@ public class peer {
 				{
 					tmplist t=(tmplist)obj;	
 				    gotted_lists=t.getlist();
-					
+				    if(gotted_lists.size() == 0)
+				    	return null;
 					System.out.println("got data!!");
 					System.out.println(gotted_lists.get(0).peers.get(0).peerIP);
 					return gotted_lists;

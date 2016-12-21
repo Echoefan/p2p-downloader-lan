@@ -143,7 +143,7 @@ public class P2p {
      		   ////按钮点击事件
      		   String hostip = hostipjtf.getText().toString();
      		   String upfile = curfiletf.getText().toString();
-     		   String [] spfile = upfile.split("\\");
+     		   String [] spfile = upfile.split("\\\\");
      		   upfile = spfile[spfile.length-1];
      		   try {
 				peer.upfilefun(upfile,hostip);
@@ -283,8 +283,9 @@ public class P2p {
  				hostlist.setListData(hostvector);
  				netfilelist.setListData(netfilevector);
  				String hostip = hostipjtf.getText().toString();
+ 				if(hostip == null) return;
 				List<fileList> filelist=peer.getmeesage("f",hostip);
-				if(filelist!=null)
+				if(filelist != null)
 				{
 					InetAddress ia=null;
 					ia=InetAddress.getLocalHost();
